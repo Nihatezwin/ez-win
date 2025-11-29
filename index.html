@@ -9,6 +9,9 @@
     .disabled { background-color: #ccc; cursor: not-allowed; }
     .score { font-size: 20px; margin-top: 10px; }
   </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
 </head>
 <body>
   <h1>7A və 7B səsvermə</h1>
@@ -20,45 +23,48 @@
   <div id="resultB" class="score">7B: 0 nəfər — 0 xal</div>
 
   <script>
-    // localStorage ilə yoxla: daha əvvəl basıbsa, düyməni deaktiv et
-    if(localStorage.getItem('voted')) {
-      document.getElementById('btnA').disabled = true;
-      document.getElementById('btnB').disabled = true;
-      document.getElementById('btnA').classList.add('disabled');
-      document.getElementById('btnB').classList.add('disabled');
-    }
-
-    // Xal və say
-    let countA = Number(localStorage.getItem('countA')) || 0;
-    let countB = Number(localStorage.getItem('countB')) || 0;
-
-    function updateDisplay() {
-      document.getElementById('resultA').textContent = `7A: ${countA} nəfər — ${countA * 10} xal`;
-      document.getElementById('resultB').textContent = `7B: ${countB} nəfər — ${countB * 10} xal`;
-    }
-
-    updateDisplay();
-
-    document.getElementById('btnA').onclick = () => {
-      countA++;
-      localStorage.setItem('countA', countA);
-      localStorage.setItem('voted', 'true');
-      updateDisplay();
-      document.getElementById('btnA').disabled = true;
-      document.getElementById('btnB').disabled = true;
-      document.getElementById('btnA').classList.add('disabled');
-      document.getElementById('btnB').classList.add('disabled');
+    // 🔹 Firebase konfiqurasiyası (öz hesabından doldurmalısan)
+    const firebaseConfig = {
+      apiKey: "SƏNİN_API_KEY",
+      authDomain: "SƏNİN_PROJECT.firebaseapp.com",
+      databaseURL: "https://SƏNİN_PROJECT.firebaseio.com",
+      projectId: "SƏNİN_PROJECT",
+      storageBucket: "SƏNİN_PROJECT.appspot.com",
+      messagingSenderId: "SƏNİN_ID",
+      appId: "SƏNİN_APP_ID"
     };
 
-    document.getElementById('btnB').onclick = () => {
-      countB++;
-      localStorage.setItem('countB', countB);
-      localStorage.setItem('voted', 'true');
-      updateDisplay();
-      document.getElementById('btnA').disabled = true;
-      document.getElementById('btnB').disabled = true;
-      document.getElementById('btnA').classList.add('disabled');
-      document.getElementById('btnB').classList.add('disabled');
+    // 🔹 Firebase başlat
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const btnA = document.getElementById('btnA');
+    const btnB = document.getElementById('btnB');
+    const resultA = document.getElementById('resultA');
+    const resultB = document.getElementById('resultB');
+
+    // 🔹 Real vaxtda oxuma
+    db.ref('votes/7A').on('value', snapshot => {
+      const countA = snapshot.val() || 0;
+      resultA.textContent = `7A: ${countA} nəfər — ${countA * 10} xal`;
+    });
+
+    db.ref('votes/7B').on('value', snapshot => {
+      const countB = snapshot.val() || 0;
+      resultB.textContent = `7B: ${countB} nəfər — ${countB * 10} xal`;
+    });
+
+    // 🔹 Səsvermə düymələri
+    btnA.onclick = () => {
+      db.ref('votes/7A').transaction(count => (count || 0) + 1);
+      btnA.disabled = true; btnB.disabled = true;
+      btnA.classList.add('disabled'); btnB.classList.add('disabled');
+    };
+
+    btnB.onclick = () => {
+      db.ref('votes/7B').transaction(count => (count || 0) + 1);
+      btnA.disabled = true; btnB.disabled = true;
+      btnA.classList.add('disabled'); btnB.classList.add('disabled');
     };
   </script>
 </body>
