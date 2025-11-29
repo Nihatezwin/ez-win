@@ -1,6 +1,51 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+  // Sənin config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAD6tqj2_Wsftm-gD1-vTvpX1QF-ZgZBB8",
+    authDomain: "duzune7b.firebaseapp.com",
+    projectId: "duzune7b",
+    storageBucket: "duzune7b.firebasestorage.app",
+    messagingSenderId: "1005748754652",
+    appId: "1:1005748754652:web:ba1ddeba6779ff17f17c19"
+  };
+
+  // Başlat
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const btnA = document.getElementById("btnA");
+  const btnB = document.getElementById("btnB");
+  const resultA = document.getElementById("resultA");
+  const resultB = document.getElementById("resultB");
+
+  // Real vaxtda oxuma
+  onValue(ref(db, "votes/7A"), snapshot => {
+    const countA = snapshot.val() || 0;
+    resultA.textContent = `7A: ${countA} nəfər — ${countA * 10} xal`;
+  });
+
+  onValue(ref(db, "votes/7B"), snapshot => {
+    const countB = snapshot.val() || 0;
+    resultB.textContent = `7B: ${countB} nəfər — ${countB * 10} xal`;
+  });
+
+  // Düymələr
+  btnA.onclick = () => {
+    runTransaction(ref(db, "votes/7A"), count => (count || 0) + 1);
+    btnA.disabled = true; btnB.disabled = true;
+  };
+
+  btnB.onclick = () => {
+    runTransaction(ref(db, "votes/7B"), count => (count || 0) + 1);
+    btnA.disabled = true; btnB.disabled = true;
+  };
+</script>
   <meta charset="UTF-8">
   <title>7A və 7B səsvermə</title>
   <style>
@@ -131,4 +176,5 @@ const app = initializeApp(firebaseConfig);
   </script>
 </body>
 </html>
+
 
