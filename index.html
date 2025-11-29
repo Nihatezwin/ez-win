@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <title>7A və 7B səsvermə</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    button { font-size: 24px; padding: 12px 24px; margin: 20px; cursor: pointer; }
+    .disabled { background-color: #ccc; cursor: not-allowed; }
+    .score { font-size: 20px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>7A və 7B səsvermə</h1>
+
+  <button id="btnA">7A</button>
+  <div id="resultA" class="score">7A: 0 nəfər — 0 xal</div>
+
+  <button id="btnB">7B</button>
+  <div id="resultB" class="score">7B: 0 nəfər — 0 xal</div>
+
+  <script>
+    // localStorage ilə yoxla: daha əvvəl basıbsa, düyməni deaktiv et
+    if(localStorage.getItem('voted')) {
+      document.getElementById('btnA').disabled = true;
+      document.getElementById('btnB').disabled = true;
+      document.getElementById('btnA').classList.add('disabled');
+      document.getElementById('btnB').classList.add('disabled');
+    }
+
+    // Xal və say
+    let countA = Number(localStorage.getItem('countA')) || 0;
+    let countB = Number(localStorage.getItem('countB')) || 0;
+
+    function updateDisplay() {
+      document.getElementById('resultA').textContent = `7A: ${countA} nəfər — ${countA * 10} xal`;
+      document.getElementById('resultB').textContent = `7B: ${countB} nəfər — ${countB * 10} xal`;
+    }
+
+    updateDisplay();
+
+    document.getElementById('btnA').onclick = () => {
+      countA++;
+      localStorage.setItem('countA', countA);
+      localStorage.setItem('voted', 'true');
+      updateDisplay();
+      document.getElementById('btnA').disabled = true;
+      document.getElementById('btnB').disabled = true;
+      document.getElementById('btnA').classList.add('disabled');
+      document.getElementById('btnB').classList.add('disabled');
+    };
+
+    document.getElementById('btnB').onclick = () => {
+      countB++;
+      localStorage.setItem('countB', countB);
+      localStorage.setItem('voted', 'true');
+      updateDisplay();
+      document.getElementById('btnA').disabled = true;
+      document.getElementById('btnB').disabled = true;
+      document.getElementById('btnA').classList.add('disabled');
+      document.getElementById('btnB').classList.add('disabled');
+    };
+  </script>
+</body>
+</html>
